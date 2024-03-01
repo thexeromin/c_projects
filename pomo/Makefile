@@ -1,17 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
-LDFLAGS = 
+LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
-SRCS = main.c library.c
+SRCS = main.c library.c screen_logo.c
 OBJS = $(SRCS:.c=.o)
-DEPS = library.h
+DEPS = library.h screens.h
 
 TARGET = pomo
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) 
 
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
