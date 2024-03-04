@@ -2,4 +2,4 @@
 Basic c programming projects...
 
 ### Projects
-- [x] pomo (cli pomodoro timer)
+- [x] pomo (pomodoro timer)
