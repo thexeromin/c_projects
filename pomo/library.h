@@ -1,9 +1,12 @@
 #ifndef LIBRARY_H
 #define LIBRARY_H
 
-void init_focus();
-void init_break();
-void init_help();
-void cleanup();
+typedef struct {
+    float lifetime;
+} Timer;
+
+void StartTimer(Timer* timer, float lifetime);
+void UpdateTimer(Timer* timer);
+bool TimerDone(Timer* timer);
 
 #endif // LIBRARY_H

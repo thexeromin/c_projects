@@ -7,10 +7,8 @@
 typedef enum GameScreen {
     UNKNOWN = -1,
     LOGO = 0,
-    TITLE,
-    OPTIONS,
-    GAMEPLAY,
-    ENDING
+    FOCUS,
+    BREAK,
 } GameScreen;
 
 //----------------------------------------------------------------------------------
@@ -31,39 +29,12 @@ void UnloadLogoScreen(void);
 int FinishLogoScreen(void);
 
 //----------------------------------------------------------------------------------
-// Title Screen Functions Declaration
+// Focus Screen Functions Declaration
 //----------------------------------------------------------------------------------
-void InitTitleScreen(void);
-void UpdateTitleScreen(void);
-void DrawTitleScreen(void);
-void UnloadTitleScreen(void);
-int FinishTitleScreen(void);
-
-//----------------------------------------------------------------------------------
-// Options Screen Functions Declaration
-//----------------------------------------------------------------------------------
-void InitOptionsScreen(void);
-void UpdateOptionsScreen(void);
-void DrawOptionsScreen(void);
-void UnloadOptionsScreen(void);
-int FinishOptionsScreen(void);
-
-//----------------------------------------------------------------------------------
-// Gameplay Screen Functions Declaration
-//----------------------------------------------------------------------------------
-void InitGameplayScreen(void);
-void UpdateGameplayScreen(void);
-void DrawGameplayScreen(void);
-void UnloadGameplayScreen(void);
-int FinishGameplayScreen(void);
-
-//----------------------------------------------------------------------------------
-// Ending Screen Functions Declaration
-//----------------------------------------------------------------------------------
-void InitEndingScreen(void);
-void UpdateEndingScreen(void);
-void DrawEndingScreen(void);
-void UnloadEndingScreen(void);
-int FinishEndingScreen(void);
+void InitFocusScreen(void);
+void UpdateFocusScreen(void);
+void DrawFocusScreen(void);
+void UnloadFocusScreen(void);
+int FinishFocusScreen(void);
 
 #endif // SCREENS_H

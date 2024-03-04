@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
 LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
-SRCS = main.c library.c screen_logo.c
+SRCS = main.c library.c screen_logo.c screen_focus.c
 OBJS = $(SRCS:.c=.o)
 DEPS = library.h screens.h
 

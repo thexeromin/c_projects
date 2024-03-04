@@ -40,9 +40,7 @@ int main(void) {
     switch (currentScreen)
     {
         case LOGO: UnloadLogoScreen(); break;
-        // case TITLE: UnloadTitleScreen(); break;
-        // case GAMEPLAY: UnloadGameplayScreen(); break;
-        // case ENDING: UnloadEndingScreen(); break;
+        case FOCUS: UnloadFocusScreen(); break;
         default: break;
     }
 
@@ -57,18 +55,14 @@ static void ChangeToScreen(GameScreen screen) {
     // Unload current screen
     switch (currentScreen) {
         case LOGO: UnloadLogoScreen(); break;
-        //case TITLE: UnloadTitleScreen(); break;
-        //case GAMEPLAY: UnloadGameplayScreen(); break;
-        //case ENDING: UnloadEndingScreen(); break;
+        case FOCUS: UnloadFocusScreen(); break;
         default: break;
     }
 
     // Init next screen
     switch (screen) {
         case LOGO: InitLogoScreen(); break;
-        //case TITLE: InitTitleScreen(); break;
-        //case GAMEPLAY: InitGameplayScreen(); break;
-        //case ENDING: InitEndingScreen(); break;
+        case FOCUS: InitFocusScreen(); break;
         default: break;
     }
 
@@ -82,9 +76,15 @@ void InitGame(void) {}
 void UpdateGame(void) {
     switch(currentScreen) {
         case LOGO: UpdateLogoScreen(); break;
+        case FOCUS: UpdateFocusScreen(); break;
         default: break;
     }
-    ChangeToScreen(currentScreen);
+
+    if(IsKeyPressed(KEY_F))
+        ChangeToScreen(FOCUS);
+    if(IsKeyPressed(KEY_R))
+        ChangeToScreen(LOGO);
+
 }
 
 // Draw game (one frame)
@@ -95,10 +95,7 @@ void DrawGame(void) {
 
         switch(currentScreen) {
             case LOGO: DrawLogoScreen(); break;
-            // case TITLE: DrawTitleScreen(); break;
-            // case OPTIONS: DrawOptionsScreen(); break;
-            // case GAMEPLAY: DrawGameplayScreen(); break;
-            // case ENDING: DrawEndingScreen(); break;
+            case FOCUS: DrawFocusScreen(); break;
             default: break;
         }
 
