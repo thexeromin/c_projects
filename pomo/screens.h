@@ -37,4 +37,13 @@ void DrawFocusScreen(void);
 void UnloadFocusScreen(void);
 int FinishFocusScreen(void);
 
+//----------------------------------------------------------------------------------
+// Break Screen Functions Declaration
+//----------------------------------------------------------------------------------
+void InitBreakScreen(void);
+void UpdateBreakScreen(void);
+void DrawBreakScreen(void);
+void UnloadBreakScreen(void);
+int FinishBreakScreen(void);
+
 #endif // SCREENS_H

@@ -41,6 +41,7 @@ int main(void) {
     {
         case LOGO: UnloadLogoScreen(); break;
         case FOCUS: UnloadFocusScreen(); break;
+        case BREAK: UnloadBreakScreen(); break;
         default: break;
     }
 
@@ -56,6 +57,7 @@ static void ChangeToScreen(GameScreen screen) {
     switch (currentScreen) {
         case LOGO: UnloadLogoScreen(); break;
         case FOCUS: UnloadFocusScreen(); break;
+        case BREAK: UnloadBreakScreen(); break;
         default: break;
     }
 
@@ -63,6 +65,7 @@ static void ChangeToScreen(GameScreen screen) {
     switch (screen) {
         case LOGO: InitLogoScreen(); break;
         case FOCUS: InitFocusScreen(); break;
+        case BREAK: InitBreakScreen(); break;
         default: break;
     }
 
@@ -77,6 +80,7 @@ void UpdateGame(void) {
     switch(currentScreen) {
         case LOGO: UpdateLogoScreen(); break;
         case FOCUS: UpdateFocusScreen(); break;
+        case BREAK: UpdateBreakScreen(); break;
         default: break;
     }
 
@@ -84,7 +88,8 @@ void UpdateGame(void) {
         ChangeToScreen(FOCUS);
     if(IsKeyPressed(KEY_R))
         ChangeToScreen(LOGO);
-
+    if(IsKeyPressed(KEY_B))
+        ChangeToScreen(BREAK);
 }
 
 // Draw game (one frame)
@@ -96,6 +101,7 @@ void DrawGame(void) {
         switch(currentScreen) {
             case LOGO: DrawLogoScreen(); break;
             case FOCUS: DrawFocusScreen(); break;
+            case BREAK: DrawBreakScreen(); break;
             default: break;
         }
 
