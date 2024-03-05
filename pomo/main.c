@@ -1,21 +1,14 @@
 #include "raylib.h"
 #include "screens.h"
 
-//-----------------------------------------------------------------------------
 // Shared Variables Definition (global)
-// NOTE: Those variables are shared between modules through screens.h
-//-----------------------------------------------------------------------------
 GameScreen currentScreen = LOGO;
 
-//-----------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
-//-----------------------------------------------------------------------------
 static const int screenWidth = 900;
 static const int screenHeight = 500;
 
-//-----------------------------------------------------------------------------
 // Local Functions Declaration
-//-----------------------------------------------------------------------------
 static void InitGame(void);
 static void UpdateGame(void);
 static void DrawGame(void);
@@ -23,11 +16,8 @@ static void UnloadGame(void);
 static void UpdateDrawFrame(void);
 static void ChangeToScreen(GameScreen screen);
 
-//-----------------------------------------------------------------------------
-// Main entry point
-//-----------------------------------------------------------------------------
 int main(void) {
-    InitWindow(screenWidth, screenHeight, "Pomo");
+    InitWindow(screenWidth, screenHeight, "Pomodoro");
     InitGame();
 
     SetTargetFPS(60);
@@ -37,8 +27,7 @@ int main(void) {
     }
 
     // Unload current screen data before closing
-    switch (currentScreen)
-    {
+    switch (currentScreen) {
         case LOGO: UnloadLogoScreen(); break;
         case FOCUS: UnloadFocusScreen(); break;
         case BREAK: UnloadBreakScreen(); break;
@@ -95,8 +84,6 @@ void UpdateGame(void) {
 // Draw game (one frame)
 void DrawGame(void) {
      BeginDrawing();
-
-        ClearBackground(RAYWHITE);
 
         switch(currentScreen) {
             case LOGO: DrawLogoScreen(); break;

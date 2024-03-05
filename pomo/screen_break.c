@@ -4,16 +4,10 @@
 #include "library.h"
 #include "screens.h"
 
-//----------------------------------------------------------------------------------
 // Module Variables Definition (local)
-//----------------------------------------------------------------------------------
 static Timer focusTimer = { 0 };
 static float maxBreakTime = 300;
 static char value[50];
-
-//----------------------------------------------------------------------------------
-// Break Screen Functions Definition
-//----------------------------------------------------------------------------------
 
 // Break Screen Initialization logic
 void InitBreakScreen(void) {
@@ -34,12 +28,14 @@ void UpdateBreakScreen(void) {
 
 // Break Screen Draw logic
 void DrawBreakScreen(void) {
+    ClearBackground((Color) {56, 133, 138, 0});
+
     DrawText(
         value,
         (GetScreenWidth() / 2) - 100,
         100,
         65,
-        RED
+        WHITE
     );
 }
 

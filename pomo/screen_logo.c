@@ -3,15 +3,9 @@
 #include "raylib.h"
 #include "screens.h"
 
-//----------------------------------------------------------------------------------
 // Module Variables Definition (local)
-//----------------------------------------------------------------------------------
 static char* title = "POMO";
 static char* description = "A pomodoro timer for legends";
-
-//----------------------------------------------------------------------------------
-// Logo Screen Functions Definition
-//----------------------------------------------------------------------------------
 
 // Logo Screen Initialization logic
 void InitLogoScreen(void) {
@@ -23,6 +17,8 @@ void UpdateLogoScreen(void) {
 
 // Logo Screen Draw logic
 void DrawLogoScreen(void) {
+    ClearBackground(RAYWHITE);
+
     DrawText(
         title,
         (GetScreenWidth() / 2) - 100,
@@ -49,13 +45,11 @@ void DrawLogoScreen(void) {
 }
 
 // Logo Screen Unload logic
-void UnloadLogoScreen(void)
-{
+void UnloadLogoScreen(void) {
     // Unload LOGO screen variables here!
 }
 
 // Logo Screen should finish?
-int FinishLogoScreen(void)
-{
+int FinishLogoScreen(void) {
     return 0;
 }

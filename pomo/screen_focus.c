@@ -4,16 +4,10 @@
 #include "library.h"
 #include "screens.h"
 
-//----------------------------------------------------------------------------------
 // Module Variables Definition (local)
-//----------------------------------------------------------------------------------
 static Timer focusTimer = { 0 };
-static float maxFocusTime = 1500;
+static float maxFocusTime = 1800;
 static char value[50];
-
-//----------------------------------------------------------------------------------
-// Focus Screen Functions Definition
-//----------------------------------------------------------------------------------
 
 // Focus Screen Initialization logic
 void InitFocusScreen(void) {
@@ -34,12 +28,14 @@ void UpdateFocusScreen(void) {
 
 // Focus Screen Draw logic
 void DrawFocusScreen(void) {
+    ClearBackground((Color) {186, 73, 73, 0});
+
     DrawText(
         value,
         (GetScreenWidth() / 2) - 100,
         100,
         65,
-        RED
+        WHITE
     );
 }
 
