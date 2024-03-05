@@ -9,18 +9,18 @@
 static Timer timer = { 0 };
 static float maxBreakTime = 300;
 static char value[50];
-static bool isFinished = false;
 static char* msg = "Time to focus!";
 
 // Break Screen Initialization logic
 void InitBreakScreen(void) {
     StartTimer(&timer, maxBreakTime);
+    isFinishedTimer = false;
 }
 
 // Break Screen Update logic
 void UpdateBreakScreen(void) {
     if(timer.lifetime <= 0) {
-        isFinished = true;
+        isFinishedTimer = true;
     } else {
         UpdateTimer(&timer);
         sprintf(
@@ -37,7 +37,7 @@ void UpdateBreakScreen(void) {
 void DrawBreakScreen(void) {
     ClearBackground((Color) {56, 133, 138, 0});
 
-    if(!isFinished)
+    if(!isFinishedTimer)
         DrawText(
             value,
             (GetScreenWidth() / 2) - 100,
@@ -58,6 +58,8 @@ void DrawBreakScreen(void) {
 // Break Screen Unload logic
 void UnloadBreakScreen(void) {
     // Unload LOGO screen variables here!
+    isFinishedTimer = false;
+    StopMusicStream(music);
 }
 
 // Break Screen should finish?

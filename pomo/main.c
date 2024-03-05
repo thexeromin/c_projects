@@ -1,12 +1,17 @@
+#include <stdio.h>
+
 #include "raylib.h"
 #include "screens.h"
 
 // Shared Variables Definition (global)
+bool isFinishedTimer;
+Music music;
 GameScreen currentScreen = LOGO;
 
 // Local Variables Definition (local to this module)
 static const int screenWidth = 900;
 static const int screenHeight = 500;
+static bool musicPlayed = false;
 
 // Local Functions Declaration
 static void InitGame(void);
@@ -18,6 +23,7 @@ static void ChangeToScreen(GameScreen screen);
 
 int main(void) {
     InitWindow(screenWidth, screenHeight, "Pomodoro");
+    InitAudioDevice();
     InitGame();
 
     SetTargetFPS(60);
@@ -35,6 +41,7 @@ int main(void) {
     }
 
     UnloadGame();
+    CloseAudioDevice();
     CloseWindow();
 
     return 0;
@@ -62,10 +69,15 @@ static void ChangeToScreen(GameScreen screen) {
 }
 
 // Initialize game variables
-void InitGame(void) {}
+void InitGame(void) {
+    music = LoadMusicStream("resources/kichen-timer.mp3");
+    music.looping = false;
+    musicPlayed = false;
+}
 
 // Update game (one frame)
 void UpdateGame(void) {
+    UpdateMusicStream(music);
     switch(currentScreen) {
         case LOGO: UpdateLogoScreen(); break;
         case FOCUS: UpdateFocusScreen(); break;
@@ -79,6 +91,10 @@ void UpdateGame(void) {
         ChangeToScreen(LOGO);
     if(IsKeyPressed(KEY_B))
         ChangeToScreen(BREAK);
+
+    if(isFinishedTimer) {
+        PlayMusicStream(music);
+    }
 }
 
 // Draw game (one frame)
@@ -100,6 +116,7 @@ void DrawGame(void) {
 // Unload game variables
 void UnloadGame(void) {
     // TODO: Unload all dynamic loaded data (textures, sounds, models...)
+    UnloadMusicStream(music);
 }
 
 // Update and Draw (one frame)

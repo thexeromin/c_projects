@@ -11,8 +11,9 @@ typedef enum GameScreen {
 
 // Global Variables Declaration (shared by several modules)
 extern GameScreen currentScreen;
+extern bool isFinishedTimer;
+extern Music music;
 // extern Font font;
-// extern Music music;
 // extern Sound fxCoin;
 
 // Logo Screen Functions Declaration
