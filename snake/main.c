@@ -1,7 +1,8 @@
+#include <stdio.h>
 #include "raylib.h"
 
 // Some Defines
-#define GRID_SIZE 20
+#define GRID_SIZE 25
 
 // Types and Structures
 typedef struct {
@@ -16,10 +17,14 @@ static int GridSideLength = screenWidth / GRID_SIZE;
 static Box grid[GRID_SIZE][GRID_SIZE] = {0};
 static Vector2 snakePos = {0};
 static Vector2 snakeDir = {0};
+static Vector2 foodPos = {0};
 static const int speed = 10;
 static bool isDirX = true;
 static Color bg = BLACK;
 static Color snakeColor = RED;
+static Color foodColor = YELLOW;
+static int score = 0;
+char scoreStr[30];
 
 // Module Functions
 static void InitGame(void);
@@ -46,9 +51,20 @@ int main(void) {
 
 // Initialize game variables
 void InitGame(void) {
+    // initial food pos
+    foodPos.x = GetRandomValue(0, GRID_SIZE);
+    foodPos.y = GetRandomValue(0, GRID_SIZE);
+
     // initial snake pos
     snakePos.x = GRID_SIZE / 2;
     snakePos.y = GRID_SIZE / 2;
+
+    // initial score
+    sprintf(
+        scoreStr,
+        "Score: %d",
+        score
+    );
 
     // caluate grid
     for(int i = 0; i < GRID_SIZE; i++) {
@@ -106,6 +122,22 @@ void UpdateGame(void) {
                 grid[i][j].color = snakeColor;
             else
                 grid[i][j].color = bg;
+
+    // check for food eat
+    if((int)snakePos.x == (int)foodPos.x && (int)snakePos.y == (int)foodPos.y) {
+        foodPos.x = GetRandomValue(0, GRID_SIZE - 1);
+        foodPos.y = GetRandomValue(0, GRID_SIZE - 1);
+
+        score += 5;
+        sprintf(
+            scoreStr,
+            "Score: %d",
+            score
+        );
+    }
+    
+    // update food
+    grid[(int)foodPos.x][(int)foodPos.y].color = foodColor;
 }
 
 // Draw game (one frame)
@@ -116,6 +148,8 @@ void DrawGame(void) {
             for(int j = 0; j < GRID_SIZE; j++)
                 DrawRectangleRec(grid[i][j].rec, grid[i][j].color);
 
+        // draw score
+        DrawText(scoreStr, screenWidth - 120, 10, 20, WHITE);
     EndDrawing();
 }
 
