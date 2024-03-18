@@ -2,9 +2,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
 LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
-SRCS = main.c
+SRCS = main.c library.c
 OBJS = $(SRCS:.c=.o)
-DEPS = 
+DEPS = library.h
 
 TARGET = snake 
 

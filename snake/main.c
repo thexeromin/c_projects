@@ -1,5 +1,7 @@
 #include <stdio.h>
+
 #include "raylib.h"
+#include "library.h"
 
 // Some Defines
 #define GRID_SIZE 25
@@ -15,7 +17,6 @@ static const int screenWidth = 500;
 static const int screenHeight = 500;
 static int GridSideLength = screenWidth / GRID_SIZE;
 static Box grid[GRID_SIZE][GRID_SIZE] = {0};
-static Vector2 snakePos = {0};
 static Vector2 snakeDir = {0};
 static Vector2 foodPos = {0};
 static const int speed = 10;
@@ -25,6 +26,7 @@ static Color snakeColor = RED;
 static Color foodColor = YELLOW;
 static int score = 0;
 char scoreStr[30];
+node_t* snake = NULL;
 
 // Module Functions
 static void InitGame(void);
@@ -54,10 +56,10 @@ void InitGame(void) {
     // initial food pos
     foodPos.x = GetRandomValue(0, GRID_SIZE);
     foodPos.y = GetRandomValue(0, GRID_SIZE);
-
+    
     // initial snake pos
-    snakePos.x = GRID_SIZE / 2;
-    snakePos.y = GRID_SIZE / 2;
+    Vector2 initial_pos = { GRID_SIZE / 2, GRID_SIZE / 2 };
+    push_start(&snake, initial_pos);
 
     // initial score
     sprintf(
@@ -73,14 +75,12 @@ void InitGame(void) {
             grid[i][j].rec.y = GridSideLength * j;
             grid[i][j].rec.width = GridSideLength;
             grid[i][j].rec.height = GridSideLength;
-
-            // initial snake pos
-            if(i == (int)snakePos.x && j == (int)snakePos.y)
-                grid[i][j].color = snakeColor;
-            else
-                grid[i][j].color = bg;
+            grid[i][j].color = bg;
         }
     }
+    
+    // initial snake pos
+    grid[(int)snake->data.x][(int)snake->data.y].color = snakeColor;
 }
 
 // Update game (one frame)
@@ -101,30 +101,46 @@ void UpdateGame(void) {
     }
 
     // update snake pos
-    if(isDirX)
-        snakePos.x += snakeDir.x * GetFrameTime();
-    else
-        snakePos.y += snakeDir.y * GetFrameTime();
+    if(isDirX) {
+        Vector2 new_pos = {
+            snake->data.x + snakeDir.x * GetFrameTime(),
+            snake->data.y
+        };
+        push_start(&snake, new_pos);
+        remove_last(snake);
+    } else {
+        Vector2 new_pos = {
+            snake->data.x,
+            snake->data.y + snakeDir.y * GetFrameTime()
+        };
+        push_start(&snake, new_pos);
+        remove_last(snake);
+    }
 
     // threshold check
-    if(snakePos.x < 0)
-        snakePos.x = GRID_SIZE - 1;
-    if(snakePos.x > GRID_SIZE)
-        snakePos.x = 0;
-    if(snakePos.y < 0)
-        snakePos.y = GRID_SIZE - 1;
-    if(snakePos.y > GRID_SIZE)
-        snakePos.y = 0;
+    if(snake->data.x < 0)
+        snake->data.x = GRID_SIZE - 1;
+    if(snake->data.x > GRID_SIZE)
+        snake->data.x = 0;
+    if(snake->data.y < 0)
+        snake->data.y = GRID_SIZE - 1;
+    if(snake->data.y > GRID_SIZE)
+        snake->data.y = 0;
 
+    // update background
     for(int i = 0; i < GRID_SIZE; i++)
         for(int j = 0; j < GRID_SIZE; j++)
-            if(i == (int)snakePos.x && j == (int)snakePos.y)
-                grid[i][j].color = snakeColor;
-            else
                 grid[i][j].color = bg;
 
+    // TODO: iterate over snake & update snake pos color
+    node_t* curr_snake = snake;
+    while (curr_snake != NULL) {
+        grid[(int)curr_snake->data.x][(int)curr_snake->data.y].color = snakeColor;
+        curr_snake = curr_snake->next;
+    }
+
     // check for food eat
-    if((int)snakePos.x == (int)foodPos.x && (int)snakePos.y == (int)foodPos.y) {
+    if((int)snake->data.x == (int)foodPos.x && (int)snake->data.y == (int)foodPos.y) {
         foodPos.x = GetRandomValue(0, GRID_SIZE - 1);
         foodPos.y = GetRandomValue(0, GRID_SIZE - 1);
 
@@ -134,6 +150,10 @@ void UpdateGame(void) {
             "Score: %d",
             score
         );
+
+        // increase snake length
+        Vector2 pos = { snake->data.x - 1, snake->data.y - 1 };
+        push_end(snake, pos);
     }
     
     // update food
