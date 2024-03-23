@@ -5,8 +5,8 @@
 #include <setjmp.h>
 #include "jpeglib.h"
 
-char getCharacterForGrayScale(unsigned char grayScale);
-int printAsciiArt(char *filename);
+char get_character_for_gray_scale(unsigned char grayScale);
+int print_ascii_art(char *filename);
 
 struct my_error_mgr
 {
@@ -25,12 +25,12 @@ int main(int argc, char *argv[])
         exit(22);
     }
 
-    (void)printAsciiArt(argv[1]);
+    (void)print_ascii_art(argv[1]);
 
     return 0;
 }
 
-char getCharacterForGrayScale(unsigned char grayScale)
+char get_character_for_gray_scale(unsigned char grayScale)
 {
     int rampLength = strlen(grayRamp);
     return grayRamp[(int)ceil((rampLength - 1) * grayScale / 255)];
@@ -52,7 +52,7 @@ to_gray_scale(unsigned char r, unsigned char g, unsigned char b)
     return 0.21 * r + 0.72 * g + 0.07 * b;
 }
 
-int printAsciiArt(char *filename)
+int print_ascii_art(char *filename)
 {
     struct jpeg_decompress_struct cinfo;
     struct my_error_mgr jerr;
@@ -99,7 +99,7 @@ int printAsciiArt(char *filename)
 
             unsigned char val = to_gray_scale(r, g, b);
             // printf("Pixel %d, %d: grayscale: %d\n", cinfo.output_scanline, i, val);
-            char ch = getCharacterForGrayScale(val);
+            char ch = get_character_for_gray_scale(val);
             printf("%c", ch);
         }
         printf("\n");
