@@ -5,3 +5,4 @@ Basic c programming projects...
 - [x] pomo (pomodoro timer)
 - [x] snake (game)
 - [x] asciigen (Convert image to ascii)
+- [ ] flappy_bird (game)
