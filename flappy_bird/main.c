@@ -20,6 +20,7 @@ static const int screenHeight = 600;
 Pipe pipes[MAXPIPES];
 Rectangle bird = {0};
 Camera2D camera = { 0 };
+bool isCrash = false;
 
 // Module Functions
 static void InitGame(void);
@@ -72,22 +73,41 @@ void InitGame(void) {
     camera.offset = (Vector2){ screenWidth/4.0f, screenHeight/2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
+
+    isCrash = false;
 }
 
 // Update game (one frame)
 void UpdateGame(void) {
-    bird.x += 1;
-    bird.y += 1;
+    if(!isCrash) {
+        bird.x += 1;
+        bird.y += 1;
+    }
     // if (IsKeyDown(KEY_RIGHT)) bird.x += 2;
     if (IsKeyDown(KEY_UP)) bird.y -= 5;
     if (IsKeyDown(KEY_DOWN)) bird.y += 5;
+    // reset
+    if (IsKeyDown(KEY_R)) {
+        InitGame();
+    }
     camera.target = (Vector2){ bird.x + 20, bird.y + 20 };
+
+    // check collison
+    for(int i = 0; i < MAXPIPES; i++) {
+        if(CheckCollisionRecs(bird, pipes[i].upperPipe)) {
+            isCrash = true;
+        } else if(CheckCollisionRecs(bird, pipes[i].lowerPipe)) {
+            isCrash = true;
+        }
+    }
 }
 
 // Draw game (one frame)
 void DrawGame(void) {
     BeginDrawing();
     ClearBackground(BLACK);
+    if(isCrash)
+        DrawText("End Game", 20, 20, 40, LIGHTGRAY);
     BeginMode2D(camera);
         for(int i = 0; i < MAXPIPES; i++) {
             DrawRectangleRec(pipes[i].upperPipe, GREEN);

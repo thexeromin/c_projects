@@ -5,5 +5,5 @@ Basic c programming projects...
 - [x] pomo (pomodoro timer)
 - [x] snake (game)
 - [x] asciigen (Convert image to ascii)
-- [ ] flappy_bird (game)
+- [x] flappy_bird (game)
 - [ ] termchat (simple chat application for terminal)
