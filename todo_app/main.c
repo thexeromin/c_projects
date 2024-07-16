@@ -12,6 +12,9 @@ WINDOW* create_newwin(
     int label_color
 );
 void win_show(WINDOW* win, char* label, int label_color);
+void print_help_menu(
+    WINDOW* win
+);
 void print_in_middle(
     WINDOW* win,
     int starty,
@@ -20,6 +23,13 @@ void print_in_middle(
     char* string,
     chtype color
 );
+
+char* menu_options[] = {
+    "[i] Add todo",
+    "[x] Delete todo",
+    "[q] Quit",
+};
+int menu_options_length = sizeof(menu_options) / sizeof(menu_options[0]);
 
 int main() {
     WINDOW* info_win;
@@ -38,6 +48,8 @@ int main() {
 
     info_win = create_newwin(INFO_WIN_HEIGHT, COLS - 4, 2, 2, "COMMANDS", 1);
     view_win = create_newwin(LINES - (INFO_WIN_HEIGHT + 10), COLS - 4, 2 + INFO_WIN_HEIGHT, 2, "TODOS", 1);
+
+    print_help_menu(info_win);
 
     getch();
     endwin();
@@ -107,4 +119,18 @@ void print_in_middle(
     mvwprintw(win, y, x, "%s", string);
     wattroff(win, color);
     refresh();
+}
+
+void print_help_menu(
+    WINDOW* win
+) {
+    int width, height;
+
+    getmaxyx(win, height, width);
+
+    for(int i = 0; i < menu_options_length; i++) {
+        mvwprintw(win, 3 + i, 2, "%s", menu_options[i]);
+    }
+
+    wrefresh(win);
 }
