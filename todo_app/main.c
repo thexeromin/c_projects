@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <string.h>
+#include <stddef.h>
 
 #define INFO_WIN_HEIGHT 7
 
@@ -23,35 +24,85 @@ void print_in_middle(
     char* string,
     chtype color
 );
+void print_menu(WINDOW *menu_win, int highlight);
 
 char* menu_options[] = {
     "[i] Add todo",
-    "[x] Delete todo",
+    "[j] Move down [k] Move up",
     "[q] Quit",
 };
 int menu_options_length = sizeof(menu_options) / sizeof(menu_options[0]);
+char todos[100][10];
+int curr_idx = 0;
+int n_todos = sizeof(todos) / sizeof(char *);
 
 int main() {
     WINDOW* info_win;
     WINDOW* view_win;
 
+    int highlight = 1;
+    int choice = 0;
+    wchar_t c;
+
+    char input_str[100];
+
     // initialize curses
     initscr();
     start_color();
+    noecho();
     cbreak();
     keypad(stdscr, TRUE);
 
     // Initialize all the colors
 	init_pair(1, COLOR_CYAN, COLOR_BLACK);
 
-    refresh();
-
     info_win = create_newwin(INFO_WIN_HEIGHT, COLS - 4, 2, 2, "COMMANDS", 1);
     view_win = create_newwin(LINES - (INFO_WIN_HEIGHT + 10), COLS - 4, 2 + INFO_WIN_HEIGHT, 2, "TODOS", 1);
 
-    print_help_menu(info_win);
+    refresh();
 
-    getch();
+    print_help_menu(info_win);
+    print_menu(view_win, highlight);
+
+    while(1) {	
+        c = wgetch(view_win);
+		switch(c) {
+            case 'k':
+				if(highlight == 1)
+					highlight = n_todos;
+				else
+					--highlight;
+				break;
+			case 'j':
+				if(highlight == n_todos)
+					highlight = 1;
+				else 
+					++highlight;
+				break;
+            case 'i':
+                echo();
+                mvwgetstr(stdscr, LINES - 2, 1, input_str);
+                strcpy(todos[curr_idx++], input_str);
+                noecho();
+                break;
+            case 'q':
+				choice = highlight;
+                break;
+			case 10:
+				choice = highlight;
+				break;
+			default:
+				mvprintw(24, 0, "Charcter pressed is = %3d Hopefully it can be printed as '%c'", c, c);
+				refresh();
+				break;
+		}
+		print_menu(view_win, highlight);
+		if(choice != 0)	/* User did a choice come out of the infinite loop */
+			break;
+	}	
+
+    clrtoeol();
+    refresh();
     endwin();
     return 0;
 }
@@ -133,4 +184,23 @@ void print_help_menu(
     }
 
     wrefresh(win);
+}
+
+void print_menu(WINDOW *menu_win, int highlight) {
+	int x, y, i;	
+
+	x = 2;
+	y = 3;
+	box(menu_win, 0, 0);
+	for(i = 0; i < curr_idx; ++i) {
+        if(highlight == i + 1) { /* Hightlight the present choice */ 
+            wattron(menu_win, A_REVERSE); 
+			mvwprintw(menu_win, y, x, "%s", todos[i]);
+			wattroff(menu_win, A_REVERSE);
+		}
+		else
+			mvwprintw(menu_win, y, x, "%s", todos[i]);
+		++y;
+	}
+	wrefresh(menu_win);
 }
