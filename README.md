@@ -6,4 +6,5 @@ Basic c programming projects...
 - [x] snake (game)
 - [x] asciigen (Convert image to ascii)
 - [x] flappy_bird (game)
+- [x] todo_app (Basic todo list app)
 - [ ] termchat (simple chat application for terminal)
