@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <stddef.h>
+#include "library.h"
 
 #define INFO_WIN_HEIGHT 7
 
@@ -24,17 +25,15 @@ void print_in_middle(
     char* string,
     chtype color
 );
-void print_menu(WINDOW *menu_win, int highlight);
+void print_todos(WINDOW* win, int highlight);
 
 char* menu_options[] = {
-    "[i] Add todo",
+    "[i] Add todo [d] Delete todo",
     "[j] Move down [k] Move up",
     "[q] Quit",
 };
 int menu_options_length = sizeof(menu_options) / sizeof(menu_options[0]);
-char todos[100][10];
-int curr_idx = 0;
-int n_todos = sizeof(todos) / sizeof(char *);
+node_t* todos_node = NULL;
 
 int main() {
     WINDOW* info_win;
@@ -43,7 +42,6 @@ int main() {
     int highlight = 1;
     int choice = 0;
     wchar_t c;
-
     char input_str[100];
 
     // initialize curses
@@ -56,34 +54,37 @@ int main() {
     // Initialize all the colors
 	init_pair(1, COLOR_CYAN, COLOR_BLACK);
 
+    // Create windows
     info_win = create_newwin(INFO_WIN_HEIGHT, COLS - 4, 2, 2, "COMMANDS", 1);
     view_win = create_newwin(LINES - (INFO_WIN_HEIGHT + 10), COLS - 4, 2 + INFO_WIN_HEIGHT, 2, "TODOS", 1);
 
     refresh();
 
     print_help_menu(info_win);
-    print_menu(view_win, highlight);
+    print_todos(view_win, highlight);
 
     while(1) {	
         c = wgetch(view_win);
 		switch(c) {
             case 'k':
-				if(highlight == 1)
-					highlight = n_todos;
-				else
-					--highlight;
+                --highlight;
 				break;
 			case 'j':
-				if(highlight == n_todos)
-					highlight = 1;
-				else 
-					++highlight;
+                ++highlight;
 				break;
             case 'i':
                 echo();
                 mvwgetstr(stdscr, LINES - 2, 1, input_str);
-                strcpy(todos[curr_idx++], input_str);
+                push(&todos_node, input_str);
                 noecho();
+                break;
+            case 'd':
+                node_t* temp = todos_node;
+                for(int i = 0; temp != NULL; i++, temp = temp->next) {
+                    if(i + 1 == highlight) {
+                        delete(todos_node, temp->data);
+                    }
+                }
                 break;
             case 'q':
 				choice = highlight;
@@ -96,7 +97,7 @@ int main() {
 				refresh();
 				break;
 		}
-		print_menu(view_win, highlight);
+        print_todos(view_win, highlight);
 		if(choice != 0)	/* User did a choice come out of the infinite loop */
 			break;
 	}	
@@ -186,21 +187,25 @@ void print_help_menu(
     wrefresh(win);
 }
 
-void print_menu(WINDOW *menu_win, int highlight) {
-	int x, y, i;	
+void print_todos(WINDOW* win, int highlight) {
+	int x, y;	
+    node_t* current = todos_node;
 
 	x = 2;
 	y = 3;
-	box(menu_win, 0, 0);
-	for(i = 0; i < curr_idx; ++i) {
+
+    wclear(win);
+	box(win, 0, 0);
+
+    for(int i = 0; current != NULL; i++, current = current->next) {
         if(highlight == i + 1) { /* Hightlight the present choice */ 
-            wattron(menu_win, A_REVERSE); 
-			mvwprintw(menu_win, y, x, "%s", todos[i]);
-			wattroff(menu_win, A_REVERSE);
+            wattron(win, A_REVERSE); 
+			mvwprintw(win, y, x, "%s", current->data);
+			wattroff(win, A_REVERSE);
 		}
 		else
-			mvwprintw(menu_win, y, x, "%s", todos[i]);
+			mvwprintw(win, y, x, "%s", current->data);
 		++y;
-	}
-	wrefresh(menu_win);
+    }
+	wrefresh(win);
 }

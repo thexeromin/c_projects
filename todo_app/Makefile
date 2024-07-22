@@ -1,8 +1,23 @@
-todo_app: main.c
-	gcc -o todo_app main.c -lncurses
+CC = gcc
+CFLAGS = -std=c11
+LDFLAGS = -lncurses
 
-clean:
-	rm todo_app
+SRCS = main.c library.c
+OBJS = $(SRCS:.c=.o)
+DEPS = library.h
+
+TARGET = todo_app
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) 
+
+%.o: %.c $(DEPS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 run:
-	./todo_app
+	./$(TARGET)
+
+clean:
+	rm -rf $(OBJS) $(TARGET)
