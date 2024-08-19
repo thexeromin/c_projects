@@ -7,4 +7,5 @@ Basic c programming projects...
 - [x] asciigen (Convert image to ascii)
 - [x] flappy_bird (game)
 - [x] todo_app (Basic todo list app)
+- [x] calt (CLI calculator)
 - [ ] termchat (simple chat application for terminal)
