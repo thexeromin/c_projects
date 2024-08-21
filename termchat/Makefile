@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -Wall -Wextra -std=gnu11
 
 # Linker flags (if any libraries are required)
 LDFLAGS_CLIENT = -lncurses
