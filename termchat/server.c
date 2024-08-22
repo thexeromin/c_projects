@@ -10,28 +10,26 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <threads.h>
+#include <sys/mman.h>
 
 #define PORT "3490"         // the port user will be connecting to
 #define BACKLOG 10          // how many pending connection queue will hold
+#define MAXCLIENTS 2        // number of clients can chat
+#define MAXDATASIZE 100     // max data size
 
-void sigchld_handler(int s) {
-    (void)s;
+void sigchld_handler(int s);
+void *get_in_addr(struct sockaddr *sa);
 
-    // waitpid() might overwrite errno, so save it
-    int saved_errno = errno;
+// Shared data between threads
+typedef struct {
+    int clients[MAXCLIENTS];
+    int recv_sockfd;
+    mtx_t mutex;
+} SharedData;
 
-    while(waitpid(-1, NULL, WNOHANG) > 0);
-
-    errno = saved_errno;
-}
-
-// get sockaddr, IPv4 or IPv6
-void *get_in_addr(struct sockaddr *sa) {
-    if(sa->sa_family == AF_INET) 
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
+void init_shared_data(SharedData* data);
+int thread_func(void* arg);
 
 int main(void) {
     int sock_fd, new_fd;     // listen on sock_fd, new connection on new_fd
@@ -42,6 +40,14 @@ int main(void) {
     int yes = 1;
     char s[INET6_ADDRSTRLEN];
     int rv;
+
+    thrd_t threads[2];
+    int curr_thrd = 0;
+    int client_idx = 0;
+    SharedData shared_data;
+
+    // initalize mutex
+    init_shared_data(&shared_data);
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -110,19 +116,70 @@ int main(void) {
             s,
             sizeof s
         );
-        printf("server: got connection from %s\n", s);
+        printf("server: got connection from %s - %d\n", s, new_fd);
 
-        if(!fork()) {   // this is the child process
-            close(sock_fd);  // child doesn't need the listener
-            if(send(new_fd, "Hello, world!", 13, 0) == -1)
-                perror("send");
-            close(new_fd);
-            exit(0);
-        }
-        printf("closing connection\n");
-        close(new_fd);      // parent doesn't need this
+        // create thread & pass data
+        shared_data.recv_sockfd = new_fd;
+        shared_data.clients[client_idx++] = new_fd;
+        thrd_create(&threads[curr_thrd++], thread_func, &shared_data);
+        // thrd_detach(threads[curr_thrd]);
     }
 
+    printf("closing connection\n");
+    mtx_destroy(&shared_data.mutex);
+    close(sock_fd);
+
+    return 0;
+}
+
+void sigchld_handler(int s) {
+    (void)s;
+
+    // waitpid() might overwrite errno, so save it
+    int saved_errno = errno;
+
+    while(waitpid(-1, NULL, WNOHANG) > 0);
+
+    errno = saved_errno;
+}
+
+// get sockaddr, IPv4 or IPv6
+void *get_in_addr(struct sockaddr *sa) {
+    if(sa->sa_family == AF_INET) 
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
+void init_shared_data(SharedData* data) {
+    mtx_init(&data->mutex, mtx_plain);
+}
+
+int thread_func(void* arg) {
+    SharedData* data = (SharedData*)arg;
+    int numbytes;
+    char buf[MAXDATASIZE];
+    int sockfd = data->recv_sockfd;
+
+    // infinite loop for checking messages
+    while(1) {
+        if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+            perror("recv");
+            exit(1);
+        }
+        if(numbytes > 0) {
+            mtx_lock(&data->mutex);
+            for(int i = 0; i < 2; i++)  {
+                if(data->clients[i] != sockfd) {
+                    if(send(data->clients[i], buf, numbytes+1, 0) == -1) {
+                        perror("send");
+                        mtx_unlock(&data->mutex);
+                    }
+                }
+            }
+            mtx_unlock(&data->mutex);
+        }
+    }
 
     return 0;
 }
