@@ -8,4 +8,4 @@ Basic c programming projects...
 - [x] flappy_bird (game)
 - [x] todo_app (Basic todo list app)
 - [x] calt (CLI calculator)
-- [ ] termchat (simple chat application for terminal)
+- [x] termchat (simple chat application for terminal)
